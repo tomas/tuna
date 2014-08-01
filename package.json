@@ -1,0 +1,14 @@
+{
+  "name": "tuna",
+  "version": "0.0.1",
+  "description": "Reverse tunnels. Tunnels reverse.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tomas Pollak <tomas@forkhq.com>",
+  "license": "BSD"
+}
