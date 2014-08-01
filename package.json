@@ -1,6 +1,6 @@
 {
   "name": "tuna",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Reverse tunnels. Tunnels reverse.",
   "main": "index.js",
   "directories": {
