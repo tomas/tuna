@@ -43,8 +43,8 @@ Tunnel.prototype.is_open = function() {
 }
 
 Tunnel.prototype.opened = function() {
-  if (this.is_open()) 
-    throw new Error('Already open!');
+  // if (this.is_open()) 
+  //  throw new Error('Already open!');
 
   this.open_status = true;
   this.emit('opened');
@@ -58,8 +58,8 @@ Tunnel.prototype.piping = function(bool) {
 }
 
 Tunnel.prototype.closed = function() {
-  if (!this.is_open()) 
-    throw new Error('Already closed!');
+  // if (!this.is_open()) 
+  //  throw new Error('Already closed!');
 
   this.open_status = false;
   this.emit('closed');
@@ -93,8 +93,8 @@ Tunnel.prototype.open = function(cb) {
     remote.destroy();
   })
 
-  remote.on('close', function(err) {
-    debug('Remote closed.');
+  remote.on('close', function(had_error) {
+    debug('Remote closed, with error: ' + had_error);
 
     self.closed();
     self.local.end();
@@ -155,10 +155,11 @@ Tunnel.prototype.pipe = function(chunk) {
     self.remote.end(err.code); // sends and ends
   })
 
-  local.on('close', function(err) {
-    debug('Local closed.');
+  local.on('close', function(had_error) {
+    debug('Local closed, with error: ' + had_error);
     self.piping(false);
   })
+
 }
 
 Tunnel.prototype.close = function() {
