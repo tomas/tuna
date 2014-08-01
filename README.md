@@ -9,9 +9,10 @@ Code
     var Tunnel = require('tuna');
   
     var opts = {
+      secure      : true,
       local_port  : 5500,
       remote_port : 8800,
-      remote_host : 'my.server.com' 
+      remote_host : 'my.server.com'
     }
    
     var tun = new Tunnel(opts);
