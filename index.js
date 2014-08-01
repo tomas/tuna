@@ -106,8 +106,8 @@ Tunnel.prototype.open = function(cb) {
       debug('Got chunk from remote: ' + chunk.toString())
 
       // if local end is closed, open it and start piping
-      if (['closed', 'readOnly'].indexOf(self.local.readyState) !== -1) { 
-      // if (!self.local.writable) {
+      // if (['closed', 'readOnly'].indexOf(self.local.readyState) !== -1) { 
+      if (!self.local.writable) {
         self.pipe(chunk);
       } else if (chunk.toString() === stop_frame) {
         debug('Got STOP signal from remote. Closing local.');
