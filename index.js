@@ -159,8 +159,6 @@ Tunnel.prototype.pipe = function(chunk) {
     debug('Local closed.');
     self.piping(false);
   })
-
-  this.local = local;
 }
 
 Tunnel.prototype.close = function() {
