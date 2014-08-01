@@ -152,7 +152,7 @@ Tunnel.prototype.pipe = function(chunk) {
   local.on('error', function(err) {
     debug('Local error: ', err);
     local.last_error = err;
-    self.remote.end(e.code); // sends and ends
+    self.remote.end(err.code); // sends and ends
   })
 
   local.on('close', function(err) {
