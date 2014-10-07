@@ -1,5 +1,6 @@
 Tuna
 ====
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/tomas/tuna?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Reverse tunnels for Node.js.
 
