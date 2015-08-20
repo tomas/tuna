@@ -81,7 +81,7 @@ Tunnel.prototype.open = function(cb) {
   var remote = protocol.connect(opts, function() {
     debug('Remote connected.');
 
-    if (this.secure && !remote.authorized)
+    if (self.secure && !remote.authorized)
       debug('Invalid credentials: ' + remote.authorizationError);
 
     self.opened();
@@ -103,17 +103,20 @@ Tunnel.prototype.open = function(cb) {
   remote.on('readable', function() {
     var chunk;
     while (chunk = this.read()) {
-      debug('Got chunk from remote: ' + chunk.toString())
+      debug('Got chunk from remote: \n' + chunk.toString())
 
       // if local end is closed, open it and start piping
       // if (['closed', 'readOnly'].indexOf(self.local.readyState) !== -1) { 
-      if (!self.local.writable) {
-        self.pipe(chunk);
-      } else if (chunk.toString() === stop_frame) {
+      if (chunk.toString() === stop_frame) {
         debug('Got STOP signal from remote. Closing local.');
         self.local.end();
+      } else if (!self.local.writable) {
+        self.pipe(chunk);
       } else {
-        self.local.write(chunk)
+        var buffer = chunk;
+        setTimeout(function() {
+          self.write_local(buffer);
+        }, 10)
       }
     }
   })
@@ -122,17 +125,25 @@ Tunnel.prototype.open = function(cb) {
   this.remote = remote;
 }
 
+Tunnel.prototype.write_local = function(chunk) {
+  if (!chunk) return debug('Got empty chunk?');
+
+  debug('Writing ' + chunk.length + ' bytes from remote.');
+  this.local.write(chunk)
+}
+
 Tunnel.prototype.pipe = function(chunk) {
   var self  = this,
       local = this.local;
 
   debug('Connecting to local port ' + this.local_port);
+  self.local.removeAllListeners();
 
   local.connect(this.local_port, function() {
-    debug('Local connected.');
+    debug('Local connected. Writing ' + chunk.length + ' bytes from remote.');
 
     // write the first chunk we received
-    local.write(chunk);
+    self.write_local(chunk);
 
     // and finally, toggle stats / trigger event
     self.piping(true);
@@ -142,11 +153,15 @@ Tunnel.prototype.pipe = function(chunk) {
   // would automatically call remote.end() whenever the local
   // socket ends. we want to maintain the remote connection
   // regardless of what happens with the local one. (e.g. stop frame)
-  local.on('data', function(chunk) {
-    // debug('Received chunk from local: ' + chunk)
+  local.on('readable', function() {
+    var chunk;
 
-    if (self.remote.writable)
-      self.remote.write(chunk);
+    while (chunk = this.read()) {
+      debug('Received ' + chunk.length + ' bytes from local.');
+
+      if (self.remote.writable)
+        self.remote.write(chunk);
+    }
   })
 
   local.on('error', function(err) {
